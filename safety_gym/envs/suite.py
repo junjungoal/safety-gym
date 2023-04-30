@@ -264,10 +264,30 @@ push2 = {
 }
 push2.update(push_constrained)
 
+
+#==============#
+# Push Level 3 #
+#==============#
+# Shared among constrained envs (levels 1, 2)
+push3_constrained = {
+    'constrain_hazards': False,
+    'observe_hazards': False,
+    'observe_pillars': True,
+    }
+push3 = {
+    'placements_extents': [-1.8, -1.8, 1.8, 1.8],
+    'constrain_pillars': True,
+    'hazards_num': 0,
+    'pillars_num': 6,
+}
+push3.update(push3_constrained)
+
 bench_push_base = bench_base.copy('Push', push_all)
 bench_push_base.register('0', push0)
 bench_push_base.register('1', push1)
 bench_push_base.register('2', push2)
+bench_push_base.register('3', push3)
+
 
 
 

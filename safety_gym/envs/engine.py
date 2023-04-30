@@ -100,7 +100,7 @@ class Engine(gym.Env, gym.utils.EzPickle):
         'action_noise': 0.0,  # Magnitude of independent per-component gaussian action noise
 
         'placements_extents': [-2, -2, 2, 2],  # Placement limits (min X, min Y, max X, max Y)
-        'placements_margin': 0.0,  # Additional margin added to keepout when placing objects
+        'placements_margin': 0.,  # Additional margin added to keepout when placing objects
 
         # Floor
         'floor_display_mode': False,  # In display mode, the visible part of the floor is cropped
@@ -816,8 +816,12 @@ class Engine(gym.Env, gym.utils.EzPickle):
         for other_name, other_xy in self.layout.items():
             other_keepout = self.placements[other_name][1]
             dist = np.sqrt(np.sum(np.square(goal_xy - other_xy)))
-            if dist < other_keepout + self.placements_margin + keepout:
-                return False
+            if other_name == 'box':
+                if dist > 1. or dist < 0.5:
+                    return False
+            else:
+                if dist < other_keepout + self.placements_margin + keepout:
+                    return False
         self.layout['goal'] = goal_xy
         return True
 
@@ -1016,7 +1020,7 @@ class Engine(gym.Env, gym.utils.EzPickle):
             pos = np.asarray(pos)
             if pos.shape == (3,):
                 pos = pos[:2]  # Truncate Z coordinate
-            z = np.complex(*self.ego_xy(pos))  # X, Y as real, imaginary components
+            z = complex(*self.ego_xy(pos))  # X, Y as real, imaginary components
             dist = np.abs(z)
             angle = np.angle(z) % (np.pi * 2)
             bin_size = (np.pi * 2) / self.lidar_num_bins
